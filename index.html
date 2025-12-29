@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Whiteboard</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Boxicons for Icons -->
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Canvas Layer -->
+    <canvas id="whiteboard"></canvas>
+
+    <!-- Floating Top Bar (Project Title / Actions) -->
+    <div class="top-bar">
+        <div class="logo">
+            <i class='bx bxs-brush'></i> <span>Ariba Whiteboard</span>
+        </div>
+        <div class="actions">
+            <!-- Hidden File Input -->
+            <input type="file" id="file-input" accept=".json" style="display: none;">
+
+            <button id="load-btn" class="action-btn" title="Open Project"><i class='bx bx-folder-open'></i></button>
+            <button id="save-project-btn" class="action-btn" title="Save Project"><i class='bx bx-save'></i></button>
+            <div style="width: 1px; height: 24px; background: rgba(255,255,255,0.2); margin: 0 5px;"></div>
+            <button id="clear-btn" class="action-btn" title="Clear Board"><i class='bx bx-trash'></i></button>
+            <button id="save-btn" class="action-btn" title="Export Image"><i class='bx bx-image-alt'></i></button>
+        </div>
+    </div>
+
+    <!-- Left Sidebar (Helpers) -->
+    <div class="left-sidebar">
+        <button id="grid-btn" class="sidebar-btn" title="Toggle Grid"><i class='bx bx-grid-alt'></i></button>
+        <div class="divider-hor"></div>
+        <button id="zoom-in-btn" class="sidebar-btn" title="Zoom In"><i class='bx bx-plus'></i></button>
+        <button id="zoom-out-btn" class="sidebar-btn" title="Zoom Out"><i class='bx bx-minus'></i></button>
+        <button id="zoom-reset-btn" class="sidebar-btn" title="Reset Zoom"><i class='bx bx-reset'></i></button>
+    </div>
+
+    <!-- Floating Tools Panel -->
+    <div class="tools-panel">
+
+        <!-- Shapes & Tools -->
+        <div class="tool-group">
+            <button class="tool-btn" data-tool="move" title="Move Elements">
+                <i class='bx bx-move'></i>
+            </button>
+            <button class="tool-btn active" data-tool="brush" title="Brush">
+                <i class='bx bx-pencil'></i>
+            </button>
+            <button class="tool-btn" data-tool="highlighter" title="Highlighter">
+                <i class='bx bxs-pen'></i>
+            </button>
+            <button class="tool-btn" data-tool="eraser" title="Eraser">
+                <i class='bx bx-eraser'></i>
+            </button>
+            <button class="tool-btn" data-tool="rect" title="Rectangle">
+                <i class='bx bx-square'></i>
+            </button>
+            <button class="tool-btn" data-tool="circle" title="Circle">
+                <i class='bx bx-circle'></i>
+            </button>
+            <button class="tool-btn" data-tool="line" title="Line">
+                <i class='bx bx-minus' style="transform: rotate(-45deg);"></i>
+            </button>
+            <button class="tool-btn" data-tool="text" title="Text">
+                <i class='bx bx-text'></i>
+            </button>
+            <button class="tool-btn" data-tool="sticky" title="Sticky Note">
+                <i class='bx bx-note'></i>
+            </button>
+            <button class="tool-btn" data-tool="pan" title="Pan (Hand)">
+                <i class='bx bx-hand'></i>
+            </button>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Properties -->
+        <div class="properties-group">
+            <div class="color-picker-wrapper">
+                <input type="color" id="color-picker" value="#ffffff">
+                <label for="color-picker" class="color-preview"></label>
+            </div>
+            <button id="color-fix-btn" class="tool-btn" style="width:32px; height:32px;"
+                title="Fix Color (Reset to White)">
+                <i class='bx bxs-magic-wand'></i>
+            </button>
+
+            <div class="range-wrapper">
+                <i class='bx bx-circle' style="font-size: 0.8rem;"></i>
+                <input type="range" id="size-slider" min="1" max="50" value="5">
+                <i class='bx bxs-circle' style="font-size: 1.2rem;"></i>
+            </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- History -->
+        <div class="history-group">
+            <button id="undo-btn" class="tool-btn" title="Undo">
+                <i class='bx bx-undo'></i>
+            </button>
+            <button id="redo-btn" class="tool-btn" title="Redo">
+                <i class='bx bx-redo'></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
