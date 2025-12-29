@@ -234,7 +234,7 @@ class Renderer {
 
         // Small Grid
         this.ctx.beginPath();
-        this.ctx.strokeStyle = "rgba(255, 255, 255, 0.05)";
+        this.ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
 
         // Vertical
         const startGridX = Math.floor(startX / gridSize) * gridSize;
