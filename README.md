@@ -1,8 +1,10 @@
-# <img src="assets/images/mainpicture.png" alt="Ariba Logo" width="50" height="50" style="vertical-align: middle;"> Ariba Online Whiteboard
 
 **An Enterprise-Grade HTML5 Infinite Canvas Whiteboard.**
 
 Welcome to the **Ariba Online Whiteboard**, a powerful, lightweight, and collaborative-ready drawing tool built with vanilla JavaScript and HTML5 Canvas.
+
+
+![Ariba Online Whiteboard](assets/images/mainpicture.png)
 
 ## 🚀 Features
 
