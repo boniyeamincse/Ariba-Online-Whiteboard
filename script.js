@@ -49,6 +49,7 @@ class Element {
 
             case 'rect':
             case 'sticky':
+            case 'image':
                 return x >= this.x && x <= this.x + this.w && y >= this.y && y <= this.y + this.h;
 
             case 'circle':
@@ -167,6 +168,21 @@ class Renderer {
 
         // Bind resize
         window.addEventListener('resize', this.resize.bind(this));
+
+        // Helper for async redraws
+        this.canvas.addEventListener('refresh', () => {
+            // We need to trigger App's render, but Renderer doesn't know App.
+            // Dirty fix: Assume animation loop or just repaint
+            // Better: we can't easily reach app.requestRender() from here without refactor.
+            // BUT: The loop is requestAnimationFrame in App.
+            // If App is idle, we need a kick.
+            // Actually, StateManager calls renderCallback.
+            // Let's just Attach to window for simplicity or assume usage drives update.
+            // Or better: Let image loading just finish, next mouse move will show it.
+            // To make it instant, let's dispatch globally.
+            window.dispatchEvent(new Event('request_render'));
+        });
+
         this.resize();
     }
 
@@ -309,6 +325,18 @@ class Renderer {
             case 'sticky':
                 this.drawSticky(el);
                 break;
+
+            case 'image':
+                if (el.imgObj) {
+                    this.ctx.drawImage(el.imgObj, el.x, el.y, el.w, el.h);
+                } else if (el.dataURL) {
+                    // Lazy load image object from DataURL if lost (e.g. after JSON restore)
+                    const img = new Image();
+                    img.onload = () => this.canvas.dispatchEvent(new Event('refresh')); // Trigger redraw
+                    img.src = el.dataURL;
+                    el.imgObj = img;
+                }
+                break;
         }
 
         this.ctx.restore();
@@ -382,6 +410,7 @@ class WhiteboardApp {
 
     init() {
         this.bindEvents();
+        this.bindRenderEvent();
         this.setupUI();
         this.requestRender();
     }
@@ -390,6 +419,10 @@ class WhiteboardApp {
         requestAnimationFrame(() => {
             this.renderer.draw(this.state.elements, this.currentElement);
         });
+    }
+
+    bindRenderEvent() {
+        window.addEventListener('request_render', () => this.requestRender());
     }
 
     // --- EVENT HANDLING ---
@@ -841,7 +874,7 @@ class WhiteboardApp {
             reader.onload = (e) => {
                 try {
                     this.state.restoreFromJSON(e.target.result);
-                    // Clear history to start fresh or keep interactions? 
+                    // Clear history to start fresh or keep interactions?
                     // Usually loading a file clears undo stack of previous session
                     this.state.history = [];
                     this.state.redoStack = [];
@@ -853,6 +886,46 @@ class WhiteboardApp {
             reader.readAsText(file);
             // Reset input
             fileInput.value = '';
+        });
+
+        // Image Upload
+        const imgInput = document.querySelector("#img-input");
+        document.querySelector("#add-img-btn").addEventListener("click", () => imgInput.click());
+
+        imgInput.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Fit to reasonable size
+                    let w = img.width;
+                    let h = img.height;
+                    const maxSize = 500;
+                    if (w > maxSize || h > maxSize) {
+                        const ratio = w / h;
+                        if (w > h) { w = maxSize; h = maxSize / ratio; }
+                        else { h = maxSize; w = maxSize * ratio; }
+                    }
+
+                    // Center on screen
+                    const center = this.renderer.screenToWorld(window.innerWidth / 2, window.innerHeight / 2);
+
+                    const el = new Element('image', {
+                        x: center.x - w / 2,
+                        y: center.y - h / 2,
+                        w: w,
+                        h: h,
+                        dataURL: event.target.result // Store DataURL for persistence
+                    });
+                    this.state.addElement(el);
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+            imgInput.value = '';
         });
     }
 }

@@ -1,4 +1,4 @@
-# Ariba Online Whiteboard
+# <img src="assets/images/mainpicture.png" alt="Ariba Logo" width="50" height="50" style="vertical-align: middle;"> Ariba Online Whiteboard
 
 **An Enterprise-Grade HTML5 Infinite Canvas Whiteboard.**
 
